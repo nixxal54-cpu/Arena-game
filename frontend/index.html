@@ -329,6 +329,43 @@
             line-height: 1.7;
         }
 
+        /* Mode toggle */
+        .mode-toggle {
+            display: flex;
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: transparent;
+            border: none;
+            font-family: var(--font-hud);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--c-muted);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .mode-btn.active { background: var(--c-accent); color: #000; font-weight: 700; }
+        .mode-btn:not(.active):hover { background: rgba(255,255,255,0.05); color: var(--c-text); }
+        #server-input-row { display: none; flex-direction: column; gap: 6px; }
+        #server-input-row.visible { display: flex; }
+        #server-url-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-family: var(--font-hud);
+            color: var(--c-text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #server-url-input:focus { border-color: var(--c-accent); }
+
         /* Win & Death screens */
         #win-screen, #death-screen {
             display: none;
@@ -444,9 +481,26 @@
 <!-- ── Lobby screen ───────────────────────────────────────────────────── -->
 <div class="screen-overlay" id="lobby-screen">
     <div class="lobby-title">ARENA</div>
-    <div class="lobby-subtitle">Battle Online · Last One Standing</div>
+    <div class="lobby-subtitle">Last One Standing</div>
 
     <div class="lobby-card">
+        <div class="input-label">Game Mode</div>
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="mode-solo">🤖 Solo vs Bots</button>
+            <button class="mode-btn"        id="mode-multi">🌐 Multiplayer</button>
+        </div>
+
+        <div id="server-input-row">
+            <div class="input-label">Server URL</div>
+            <input
+                id="server-url-input"
+                type="text"
+                placeholder="ws://localhost:8080"
+                autocomplete="off"
+                spellcheck="false"
+            />
+        </div>
+
         <div class="input-label">Enter your callsign</div>
         <input
             id="name-input"
@@ -457,9 +511,8 @@
             spellcheck="false"
         />
         <button id="join-btn">Enter Arena</button>
-        <div class="lobby-hint">
-            Minimum 2 players to start a match.<br>
-            On mobile: use left side to move, right side to look. Tap FIRE to shoot.
+        <div class="lobby-hint" id="lobby-hint-text">
+            Left side: move · Right side: look · FIRE to shoot
         </div>
     </div>
 </div>
@@ -480,6 +533,7 @@
 </div>
 
 <!-- ── Scripts (order matters: dependencies first) ────────────────────── -->
+<script src="js/bot_engine.js"></script>
 <script src="js/network.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/player.js"></script>
