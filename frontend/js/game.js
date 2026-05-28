@@ -12,7 +12,7 @@
  */
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const WS_URL    = 'ws://localhost:8080';
+const WS_URL = 'wss://arena-game-lbsl.onrender.com';
 const INPUT_HZ  = 30;
 
 // ── Module instances (populated in init()) ────────────────────────────────────
