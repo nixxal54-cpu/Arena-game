@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Arena Battle Online</title>
 
     <!-- Three.js r128 from CDN -->
@@ -31,6 +31,9 @@
             background: var(--c-bg);
             color: var(--c-text);
             font-family: var(--font-hud);
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
         }
 
         /* ── Game canvas ─────────────────────────────────────────────────── */
@@ -90,8 +93,8 @@
         /* Health bar ─────────────────────────────────────────────────────── */
         #health-container {
             position: absolute;
-            bottom: 32px; left: 32px;
-            width: 240px;
+            bottom: 180px; left: 20px;
+            width: min(220px, 42vw);
         }
         #health-label {
             font-size: 11px;
@@ -128,7 +131,7 @@
         /* Info strip (top-right) ─────────────────────────────────────────── */
         #info-strip {
             position: absolute;
-            top: 24px; right: 24px;
+            top: 16px; right: 16px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -287,6 +290,9 @@
             padding: 12px 16px;
             font-size: 16px;
             font-family: var(--font-hud);
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
             color: var(--c-text);
             outline: none;
             transition: border-color 0.2s;
@@ -303,6 +309,9 @@
             padding: 14px;
             font-size: 15px;
             font-family: var(--font-hud);
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
             font-weight: 700;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -350,6 +359,9 @@
             border-radius: 6px;
             padding: 12px 32px;
             font-family: var(--font-hud);
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
             font-size: 13px;
             letter-spacing: 3px;
             color: var(--c-text);
@@ -419,7 +431,7 @@
 
     <!-- Controls reference -->
     <div id="controls-ref" class="hidden">
-        WASD · Move &nbsp;|&nbsp; MOUSE · Look &nbsp;|&nbsp; LMB / HOLD · Shoot &nbsp;|&nbsp; SPACE · Jump
+        &lt;joystick&gt; · Move &nbsp;|&nbsp; &lt;right drag&gt; · Look &nbsp;|&nbsp; LMB / HOLD · Shoot &nbsp;|&nbsp; SPACE · Jump
     </div>
 
 </div>
@@ -447,7 +459,7 @@
         <button id="join-btn">Enter Arena</button>
         <div class="lobby-hint">
             Minimum 2 players to start a match.<br>
-            Click the screen to capture mouse for FPS controls.
+            On mobile: use left side to move, right side to look. Tap FIRE to shoot.
         </div>
     </div>
 </div>
