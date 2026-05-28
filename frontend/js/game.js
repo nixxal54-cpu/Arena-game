@@ -12,8 +12,6 @@
  */
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const WS_URL    = 'ws://localhost:8080';
-const SOLO_MODE = true;   // set false to use real server
 const INPUT_HZ  = 30;
 
 // ── Module instances (populated in init()) ────────────────────────────────────
@@ -37,9 +35,9 @@ function init() {
     renderer = new Renderer(canvas);
     ui       = new UI();
     input    = new PlayerInput(canvas);
-    network  = SOLO_MODE ? new LocalServer() : new Network(WS_URL);
+    // network is created on join (depends on mode selection)
+    network  = null;
 
-    _bindNetworkEvents();
     _bindUIEvents();
     _startInputLoop();
     _startRenderLoop();
@@ -149,16 +147,47 @@ function _bindNetworkEvents() {
 // ── UI event handlers ─────────────────────────────────────────────────────────
 
 function _bindUIEvents() {
-    const joinBtn  = document.getElementById('join-btn');
-    const nameInput = document.getElementById('name-input');
+    const joinBtn       = document.getElementById('join-btn');
+    const nameInput     = document.getElementById('name-input');
+    const modeSolo      = document.getElementById('mode-solo');
+    const modeMulti     = document.getElementById('mode-multi');
+    const serverRow     = document.getElementById('server-input-row');
+    const serverUrlInput = document.getElementById('server-url-input');
+    const hintText      = document.getElementById('lobby-hint-text');
+
+    let soloMode = true;
+
+    modeSolo.addEventListener('click', () => {
+        soloMode = true;
+        modeSolo.classList.add('active');
+        modeMulti.classList.remove('active');
+        serverRow.classList.remove('visible');
+        hintText.textContent = 'Left side: move · Right side: look · FIRE to shoot';
+    });
+
+    modeMulti.addEventListener('click', () => {
+        soloMode = false;
+        modeMulti.classList.add('active');
+        modeSolo.classList.remove('active');
+        serverRow.classList.add('visible');
+        hintText.textContent = 'Needs 2+ players · Enter server WebSocket URL above';
+    });
 
     joinBtn.addEventListener('click', () => {
         const name = nameInput.value.trim() || 'Player';
         state.localName = name;
-        if (network.connected) {
+
+        if (soloMode) {
+            // Always works — no server needed
+            network = new LocalServer();
+            _bindNetworkEvents();
             network.join(name);
         } else {
-            ui.addKillFeedEntry('⚠  Not connected yet — try again', false);
+            const wsUrl = (serverUrlInput.value.trim() || 'ws://localhost:8080');
+            network = new Network(wsUrl);
+            _bindNetworkEvents();
+            // Wait for connection then join
+            network.on('connected', () => network.join(name));
         }
     });
 
@@ -166,13 +195,10 @@ function _bindUIEvents() {
         if (e.key === 'Enter') joinBtn.click();
     });
 
-    // Respawn / continue watching after death screen
+    // Respawn / spectate after death
     const respawnBtn = document.getElementById('respawn-btn');
     if (respawnBtn) {
-        respawnBtn.addEventListener('click', () => {
-            ui.hideDeathScreen();
-            // Continue spectating; server will auto-reset
-        });
+        respawnBtn.addEventListener('click', () => { ui.hideDeathScreen(); });
     }
 }
 
@@ -211,7 +237,7 @@ function _processStateUpdate(msg) {
 
 function _startInputLoop() {
     setInterval(() => {
-        if (!state.joined || !network.connected) return;
+        if (!network || !state.joined || !network.connected) return;
         if (state.dead) {
             // Still send zero input while dead (keeps connection alive)
             network.sendInput({ moveX: 0, moveZ: 0, yaw: input.yaw, pitch: input.pitch, shoot: false, jump: false });
