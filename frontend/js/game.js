@@ -51,6 +51,11 @@ function _bindNetworkEvents() {
 
     network.on('connected', () => {
         ui.addKillFeedEntry('🔌 Connected to server', false);
+        // For multiplayer: join immediately on connect
+        if (network._pendingJoinName) {
+            network.join(network._pendingJoinName);
+            network._pendingJoinName = null;
+        }
     });
 
     network.on('disconnected', () => {
@@ -178,16 +183,14 @@ function _bindUIEvents() {
         state.localName = name;
 
         if (soloMode) {
-            // Always works — no server needed
             network = new LocalServer();
             _bindNetworkEvents();
             network.join(name);
         } else {
-            const wsUrl = (serverUrlInput.value.trim() || 'ws://localhost:8080');
+            const wsUrl = serverUrlInput.value.trim() || 'ws://localhost:8080';
             network = new Network(wsUrl);
+            network._pendingJoinName = name;  // picked up in connected handler
             _bindNetworkEvents();
-            // Wait for connection then join
-            network.on('connected', () => network.join(name));
         }
     });
 
