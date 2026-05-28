@@ -12,7 +12,8 @@
  */
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const WS_URL = 'wss://arena-game-lbsl.onrender.com';
+const WS_URL    = 'ws://localhost:8080';
+const SOLO_MODE = true;   // set false to use real server
 const INPUT_HZ  = 30;
 
 // ── Module instances (populated in init()) ────────────────────────────────────
@@ -36,7 +37,7 @@ function init() {
     renderer = new Renderer(canvas);
     ui       = new UI();
     input    = new PlayerInput(canvas);
-    network  = new Network(WS_URL);
+    network  = SOLO_MODE ? new LocalServer() : new Network(WS_URL);
 
     _bindNetworkEvents();
     _bindUIEvents();
