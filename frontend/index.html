@@ -31,9 +31,6 @@
             background: var(--c-bg);
             color: var(--c-text);
             font-family: var(--font-hud);
-        touch-action: none;
-        -webkit-user-select: none;
-        user-select: none;
         }
 
         /* ── Game canvas ─────────────────────────────────────────────────── */
@@ -44,6 +41,7 @@
             height: 100%;
             display: block;
             cursor: crosshair;
+            touch-action: none;
         }
 
         /* ── Crosshair ───────────────────────────────────────────────────── */
@@ -236,6 +234,8 @@
             background: rgba(13,17,23,0.88);
             backdrop-filter: blur(8px);
             z-index: 100;
+            pointer-events: all;
+            touch-action: auto;
         }
 
         /* Lobby screen */
@@ -329,6 +329,19 @@
             line-height: 1.7;
         }
 
+
+        /* Lobby interactive elements — must allow touch */
+        .lobby-card input,
+        .lobby-card button,
+        .mode-btn,
+        #join-btn {
+            touch-action: auto;
+            -webkit-tap-highlight-color: rgba(0,229,255,0.2);
+            cursor: pointer;
+        }
+        .lobby-card input {
+            cursor: text;
+        }
         /* Mode toggle */
         .mode-toggle {
             display: flex;
